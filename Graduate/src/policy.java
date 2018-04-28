@@ -10,7 +10,7 @@ import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.ResultSet;
 
 public class policy {
-	private static int H = 0, N = 0, P = 0, CO = 0, C = 0, R = 0;
+	private static int A=0,H = 0, N = 0, P = 0, CO = 0, C = 0, R = 0;
 	private String 名称;
 	private String 组;
 	private String 配置文件;
@@ -49,7 +49,7 @@ public class policy {
 		//System.out.println(this.协议);
 	}
 	public static void xiGou() {
-		H=N=P=CO=C=R=0;
+		A=H=N=P=CO=C=R=0;
 	}
 
 	public void createOntology(OntModel m) {
@@ -72,6 +72,30 @@ public class policy {
 		String wfp = "PREFIX wfp: <" + NS + ">";// 声明查询语句中的命名空间WindowsFirewallPolicy
 		String LocalAddress = this.本地地址;
 		String queryString = "";
+	// 创建规则个体
+		OntClass rule = m.getOntClass(NS + "Rule");
+		rule1 = rule.createIndividual(NS + "Rule" + ++R);
+		System.out.println("规则计数："+R);
+		ObjectProperty obpsub = m.getObjectProperty(NS + "isSubjectOf");
+		if (!this.本地地址.contains("/") && (!this.远程地址.equals("任何")) && (this.远程端口.equals("任何"))) {
+			OntClass host = m.getOntClass(NS + "Host");
+			host2=host.createIndividual(NS+"Host"+ ++H);
+			m.add(host2, obpsub, rule1);
+		} 
+		else {
+			if ((this.本地地址.equals("任何")) && (this.远程端口.equals("任何"))) {
+				Individual entityall = m.getIndividual(NS + "AllEntities");
+				m.add(entityall, obpsub, rule1);
+			}
+			if (this.本地地址.contains("/") && (this.远程地址.equals("任何")) && (this.远程端口.equals("任何"))) {
+				OntClass network = m.getOntClass(NS + "Network");
+				Individual network2 = network.createIndividual(NS + "Network" + ++N);
+				m.add(network2, obpsub, rule1);
+			}
+			if ((!this.程序.equals("任何")) || (!this.远程端口.equals("任何"))) {
+				//m.add(process2, obp11, rule1);
+			}
+		}
 		if (!LocalAddress.contains("/") && !LocalAddress.equals("任何")) {
 			OntClass host = m.getOntClass(NS + "Host");
 			DatatypeProperty obp = m.getDatatypeProperty(NS + "ipAddressIs");
@@ -141,7 +165,6 @@ public class policy {
 				ResultSet results = qe.execSelect();
 				if (!results.hasNext()) {
 					process1 = process.createIndividual(NS + "Process" + ++P);
-					m.add(process1, dtp1, this.程序);
 					m.add(process1, obp1, host1);
 				}
 
@@ -175,7 +198,7 @@ public class policy {
 
 		OntClass ChannelOperate = m.getOntClass(NS + "ChannelOperate");
 		DatatypeProperty obp1 = m.getDatatypeProperty(NS + "protocolIs");
-
+		ObjectProperty obpOp=m.getObjectProperty(NS+"isOperateOf");
 		queryString = wfp + "SELECT ?x WHERE { ?x wfp:protocolIs ?y\r\n"+
 		                    ".FILTER regex(?y,\"" + this.协议 + "\")}";
 		if (!queryString.isEmpty()) {
@@ -185,33 +208,14 @@ public class policy {
 			if (!results.hasNext()) {
 				channeloperate1 = ChannelOperate.createIndividual(NS + "ChannelOperate" + ++CO);
 				m.add(channeloperate1, obp1, this.协议);
+				m.add(channeloperate1, obpOp, rule1);
 			}
 		}
-		// 创建规则个体
-		OntClass rule = m.getOntClass(NS + "Rule");
-		rule1 = rule.createIndividual(NS + "Rule" + ++R);
-		System.out.println("规则计数："+R);
-		ObjectProperty obp11 = m.getObjectProperty(NS + "isSubjectOf");
-		if (!this.本地地址.contains("/") && (!this.远程地址.equals("任何")) && (this.远程端口.equals("任何"))) {
-			OntClass host = m.getOntClass(NS + "Host");
-			host2=host.createIndividual(NS+"Host"+ ++H);
-			m.add(host2, obp11, rule1);
-		} 
-		else {
-			if ((this.本地地址.equals("任何")) && (this.远程端口.equals("任何"))) {
-				Individual entityall = m.getIndividual(NS + "AllEntities");
-				m.add(entityall, obp11, rule1);
-			}
-			if (this.本地地址.contains("/") && (this.远程地址.equals("任何")) && (this.远程端口.equals("任何"))) {
-				OntClass network = m.getOntClass(NS + "Network");
-				Individual network2 = network.createIndividual(NS + "Network" + ++N);
-				m.add(network2, obp11, rule1);
-			}
-			if ((!this.程序.equals("任何")) || (!this.远程端口.equals("任何"))) {
-				//m.add(process2, obp11, rule1);
-			}
-
-		}
+		
+		//创建Access关系，将进程和协议与规则绑定起来
+		OntClass access = m.getOntClass(NS + "Access");
+		
+		
 		ObjectProperty obp111 = m.getObjectProperty(NS + "isObjectOf");
 		if (this.远程地址.contains("/") && (!this.远程地址.equals("任何")) && (this.远程端口.equals("任何"))) {
 			m.add(host2, obp111, rule1);
@@ -229,7 +233,6 @@ public class policy {
 			/*if ((!this.远程端口.equals("任何"))) {
 				m.add(process2, obp111, rule1);
 			}*/
-
 		}
 		DatatypeProperty dtp1 = m.getDatatypeProperty(NS + "nameIs");
 		m.add(rule1, dtp1, this.名称);
@@ -264,9 +267,10 @@ public class policy {
 			QueryExecution qe = QueryExecutionFactory.create(query, m);
 			ResultSet results = qe.execSelect();
 			if (!results.hasNext()) {
-				OntClass Control = m.getOntClass(
+				/*OntClass Control = m.getOntClass(
 						"http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#"+op);
-				control1 = Control.createIndividual(NS + op + ++C);// 注意n从1开始递加，要定义成全局变量，因为每新生成一个新的节点，都要加1.
+				control1 = Control.createIndividual(NS + op + ++C);*/
+				control1 = m.getIndividual(NS + op);
 				ObjectProperty obp=m.getObjectProperty(NS+"isControlOf");
 				m.add(control1, obp, rule1);
 			}
