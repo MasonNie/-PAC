@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 public class UI extends JFrame {
 
@@ -28,6 +30,7 @@ public class UI extends JFrame {
 	 */
 	private JPanel contentPane;
 	private JTextField txtPath;
+	private JTable table;
 	//读写本体的静态变量
 	//static FileOutputStream fos;
 	protected static OntModel m;
@@ -90,7 +93,7 @@ public class UI extends JFrame {
 	public UI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("TEST");
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 660, 480);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -124,7 +127,7 @@ public class UI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		button.setBounds(0, 46, 93, 36);
+		button.setBounds(256, 0, 93, 36);
 		contentPane.add(button);
 		
 		txtPath = new JTextField();
@@ -133,5 +136,13 @@ public class UI extends JFrame {
 		contentPane.add(txtPath);
 		txtPath.setColumns(10);
 		txtPath.setEditable(false);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 46, 624, 385);
+		contentPane.add(scrollPane);
+		table = new JTable();
+		table.setAutoCreateRowSorter(true);
+		
+		scrollPane.setViewportView(table);
 	}
 }
