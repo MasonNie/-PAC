@@ -9,6 +9,7 @@ public class Graduate {
 				try {
 					UI frame = new UI();
 					frame.setVisible(true);
+					//frame.setResizable(false); //窗口大小不能改变
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

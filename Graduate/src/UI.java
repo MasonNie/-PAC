@@ -2,6 +2,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -52,22 +53,26 @@ public class UI extends JFrame {
         InputStreamReader reader= new InputStreamReader(new FileInputStream(file));
 		m = ModelFactory.createOntologyModel();
 		m.read("F:/TestSpace\\T0\\WindowsFirewallPolicyOntology.owl");
+		DefaultTableModel dtm = new DefaultTableModel();
         BufferedReader br = new BufferedReader(reader) ;
         String line = br.readLine();
+        String [] head= {"编号","名称","已启用","操作","程序","本地地址","远程地址","协议","本地端口","远程端口"};
+		dtm.setColumnIdentifiers(head); 			
         while (line != null) {
         	line = br.readLine(); //
         	if(line!=null) {
-        		String[] str = line.split("\t");
-        		policy p = new policy(str);
+        		String[] row = line.split("\t");
+        		policy p = new policy(row);
         		p.createOntology(m);
+    			dtm.addRow(p.tableRow());
         	}
         	else {
         		RDFWriter rdfWriter = m.getWriter("RDF/XML");
         		rdfWriter.write(m, fos, "RDF/XML");
         		policy.xiGou();
-        	}
-             
+        	}   
         }
+        table.setModel(dtm);
         br.close();
         endTime=System.currentTimeMillis();
         float seconds = (endTime - startTime) / 1000F;
@@ -93,7 +98,7 @@ public class UI extends JFrame {
 	public UI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("TEST");
-		setBounds(100, 100, 660, 480);
+		setBounds(100, 100, 800, 600);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -138,11 +143,11 @@ public class UI extends JFrame {
 		txtPath.setEditable(false);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 46, 624, 385);
+		scrollPane.setBounds(10, 46, 764, 505);
 		contentPane.add(scrollPane);
 		table = new JTable();
 		table.setAutoCreateRowSorter(true);
-		
+
 		scrollPane.setViewportView(table);
 	}
 }

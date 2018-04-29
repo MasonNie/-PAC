@@ -51,6 +51,10 @@ public class policy {
 	public static void xiGou() {
 		A=H=N=P=CO=C=R=0;
 	}
+	public Object[] tableRow() {
+		Object [] showRow= {R,this.名称,this.已启用,this.操作,this.程序,this.本地地址,this.远程地址,this.协议,this.本地端口,this.远程端口};
+		return showRow;
+	}
 
 	public void createOntology(OntModel m) {
 		Individual host1 = null;// 本地主机或网络
