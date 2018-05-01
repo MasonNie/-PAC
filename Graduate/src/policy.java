@@ -7,6 +7,7 @@ import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 
 public class policy {
@@ -100,6 +101,7 @@ public class policy {
 				//m.add(process2, obp11, rule1);
 			}
 		}
+		//创建网络域
 		if (!LocalAddress.contains("/") && !LocalAddress.equals("任何")) {
 			OntClass host = m.getOntClass(NS + "Host");
 			DatatypeProperty obp = m.getDatatypeProperty(NS + "ipAddressIs");
@@ -216,9 +218,48 @@ public class policy {
 			}
 		}
 		
-		//创建Access关系，将进程和协议与规则绑定起来
+		//创建Access关系，将进程和实体与规则绑定起来
+		boolean en=host1==null;
+		String entity=en?"AllEntities":"Host"+H;
 		OntClass access = m.getOntClass(NS + "Access");
-		
+		queryString=wfp+"SELECT ?x WHERE {?x wfp:isObjectOf ?y. ?z wfp:isSubjectOf ?y\r\n"
+				+ ".FILTER regex(?x,\""+this.程序+"\")\r\n"
+				+ ".FILTER (?z=wfp:"+entity+")}";
+		if (!queryString.isEmpty()) {
+			Query query = QueryFactory.create(queryString);
+			QueryExecution qe = QueryExecutionFactory.create(query, m);
+			ResultSet results = qe.execSelect();
+			ObjectProperty obpAces = m.getObjectProperty(NS + "isAccessOf");
+			if (!results.hasNext()) {
+				Individual access1=access.createIndividual(NS+"Access"+ ++A);
+				ObjectProperty obpOb = m.getObjectProperty(NS + "isObjectOf");
+				ObjectProperty obpSub = m.getObjectProperty(NS + "isSubjectOf");
+				if(!this.程序.isEmpty()&&this.equals("任何")) {
+					if(process1==null) {
+					Query query1 = QueryFactory.create(wfp+"SELECT ?x WHERE{?x wfp:programPathIs ?y \r\n"
+							+ ".FILTER regex(?y,\""+this.程序+"\")}");
+					QueryExecution qe1 = QueryExecutionFactory.create(query1, m);
+					ResultSet results1 = qe1.execSelect();
+					QuerySolution QS=results1.nextSolution();
+		 		    String x=QS.get("x").toString();
+		 		    Individual process_t=m.getIndividual(x);
+		 		    m.add(process_t, obpOb, access1);
+					}
+					else m.add(process1, obpOb, access1);
+		 		    if(host1==null) 
+						m.add(m.getIndividual(NS + "AllEntities"), obpSub, access1);
+					else 
+						m.add(host1, obpSub, access1);
+				}
+				m.add(access1, obpAces, rule1);
+			}
+			else {
+				QuerySolution result=results.nextSolution();
+	 		    String x=result.get("x").toString();
+	 		    Individual access1=m.getIndividual(x);
+	 		    m.add(access1, obpAces, rule1);
+			}
+		}
 		
 		ObjectProperty obp111 = m.getObjectProperty(NS + "isObjectOf");
 		if (this.远程地址.contains("/") && (!this.远程地址.equals("任何")) && (this.远程端口.equals("任何"))) {

@@ -3,6 +3,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -12,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Enumeration;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
@@ -79,19 +83,7 @@ public class UI extends JFrame {
         System.out.println("用时："+Float.toString(seconds)+" seconds");
        
 	}
-	/*public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UI frame = new UI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}*/
-
+	
 	/**
 	 * Create the frame.
 	 */
@@ -145,9 +137,21 @@ public class UI extends JFrame {
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(10, 46, 764, 505);
 		contentPane.add(scrollPane);
-		table = new JTable();
+		table = new JTable(){  
+            public String getToolTipText(MouseEvent e) {  
+                int row=table.rowAtPoint(e.getPoint());  
+                int col=table.columnAtPoint(e.getPoint());  
+                String tiptextString=null;  
+                if(row>-1 && col>-1){  
+                    Object value=table.getValueAt(row, col);  
+                    if(null!=value && !"".equals(value))  
+                        tiptextString=value.toString();//悬浮显示单元格内容  
+                }  
+                return tiptextString;  
+            }
+        };  
+		//table = new JTable();
 		table.setAutoCreateRowSorter(true);
-
 		scrollPane.setViewportView(table);
 	}
 }
