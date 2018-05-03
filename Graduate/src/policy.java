@@ -144,8 +144,9 @@ public class policy {
 		 * 因为每新生成一个新的网络节点，都要加1. ObjectProperty obp1=m.getObjectProperty(NS+"runningOn");
 		 * m.add(process1,obp1,host1); }
 		 */
-
+		//创建程序节点
 		if (!this.程序.equals("任何")) {
+			
 			OntClass process = m.getOntClass(NS + "Process");
 			ObjectProperty obp1 = m.getObjectProperty(NS + "runningOn");
 			DatatypeProperty dtp1 = m.getDatatypeProperty(NS + "programPathIs");
