@@ -1,4 +1,5 @@
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -23,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Enumeration;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
@@ -99,6 +101,7 @@ public class UI extends JFrame {
 		JButton btnNewButton = new JButton("载入");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				analysis.show="";
 				JFileChooser chooser = new JFileChooser("C:\\Users\\74330\\Desktop\\毕业设计\\聂冠雄"); //创建选择文件对象
 				  chooser.setDialogTitle("请选择文件");//设置标题
 				  chooser.setMultiSelectionEnabled(true);  //设置只能选择文件
@@ -122,6 +125,21 @@ public class UI extends JFrame {
 		JButton button = new JButton("分析");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if(table.getRowCount()==0) {
+					JOptionPane.showMessageDialog(null, "请载入有效的规则文件", "警告", JOptionPane.ERROR_MESSAGE);
+				}
+				else {
+					EventQueue.invokeLater(new Runnable() {//显示分析结果
+						public void run() {
+							try {
+								analysis frame = new analysis();
+								frame.setVisible(true);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					});
+				}
 			}
 		});
 		button.setBounds(256, 0, 93, 36);

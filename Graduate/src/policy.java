@@ -146,7 +146,7 @@ public class policy {
 		 */
 		//创建程序节点
 		if (!this.程序.equals("任何")) {
-			
+			analysis.isFileExists(this.程序, R);
 			OntClass process = m.getOntClass(NS + "Process");
 			ObjectProperty obp1 = m.getObjectProperty(NS + "runningOn");
 			DatatypeProperty dtp1 = m.getDatatypeProperty(NS + "programPathIs");
