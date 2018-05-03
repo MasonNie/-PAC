@@ -111,7 +111,7 @@ public class policy {
 			QueryExecution qe = QueryExecutionFactory.create(query, m);
 			ResultSet results = qe.execSelect();
 			if (!results.hasNext()) {
-				host1 = host.createIndividual(NS + "Host" + H++);
+				host1 = host.createIndividual(NS + "Host" + ++H);
 				m.add(host1, obp, LocalAddress);
 			}
 
@@ -122,7 +122,7 @@ public class policy {
 			OntClass network = m.getOntClass(NS + "Network");
 			String netNumber = LocalAddress.substring(0, LocalAddress.indexOf("/"));// 网络号
 			int netmask=Integer.parseInt(LocalAddress.substring(LocalAddress.indexOf("/")+1));
-			Individual network1 = network.createIndividual(NS + "Network" + N++);// 
+			Individual network1 = network.createIndividual(NS + "Network" + ++N);// 
 			DatatypeProperty obp1 = m.getDatatypeProperty(NS + "networkNumberIs");
 			obp1 = m.getDatatypeProperty(NS + "maskIs");
 			queryString = wfp+"SELECT ?x WHERE { ?x wfp:networkNumberIs \"" + netNumber + 
@@ -131,7 +131,7 @@ public class policy {
 			QueryExecution qe = QueryExecutionFactory.create(query, m);
 			ResultSet results = qe.execSelect();
 			if (!results.hasNext()) {
-				host1 = host.createIndividual(NS + "Host" + H++);
+				host1 = host.createIndividual(NS + "Host" + ++H);
 				m.add(host1, obp1, netNumber);
 			}
 				
@@ -220,11 +220,11 @@ public class policy {
 		}
 		
 		//创建Access关系，将进程和实体与规则绑定起来
-		boolean en=host1==null;
+		boolean en=(host1==null);
 		String entity=en?"AllEntities":"Host"+H;
 		OntClass access = m.getOntClass(NS + "Access");
-		queryString=wfp+"SELECT ?x WHERE {?x wfp:isObjectOf ?y. ?z wfp:isSubjectOf ?y\r\n"
-				+ ".FILTER regex(?x,\""+this.程序+"\")\r\n"
+		queryString=wfp+"SELECT ?x ?y WHERE {?x wfp:isObjectOf ?y. ?z wfp:isSubjectOf ?y.?x wfp:programPathIs ?u\r\n"
+				+ ".FILTER regex(?u,\""+this.程序+"\")\r\n"
 				+ ".FILTER (?z=wfp:"+entity+")}";
 		if (!queryString.isEmpty()) {
 			Query query = QueryFactory.create(queryString);
@@ -233,9 +233,9 @@ public class policy {
 			ObjectProperty obpAces = m.getObjectProperty(NS + "isAccessOf");
 			if (!results.hasNext()) {
 				Individual access1=access.createIndividual(NS+"Access"+ ++A);
-				ObjectProperty obpOb = m.getObjectProperty(NS + "isObjectOf");
+				ObjectProperty obpObject = m.getObjectProperty(NS + "isObjectOf");
 				ObjectProperty obpSub = m.getObjectProperty(NS + "isSubjectOf");
-				if(!this.程序.isEmpty()&&this.equals("任何")) {
+				if(!this.程序.isEmpty()&&!this.程序.equals("任何")) {
 					if(process1==null) {
 					Query query1 = QueryFactory.create(wfp+"SELECT ?x WHERE{?x wfp:programPathIs ?y \r\n"
 							+ ".FILTER regex(?y,\""+this.程序+"\")}");
@@ -244,9 +244,10 @@ public class policy {
 					QuerySolution QS=results1.nextSolution();
 		 		    String x=QS.get("x").toString();
 		 		    Individual process_t=m.getIndividual(x);
-		 		    m.add(process_t, obpOb, access1);
+		 		    m.add(process_t, obpObject, access1);
+		 		    
 					}
-					else m.add(process1, obpOb, access1);
+					else m.add(process1, obpObject, access1);
 		 		    if(host1==null) 
 						m.add(m.getIndividual(NS + "AllEntities"), obpSub, access1);
 					else 
@@ -256,7 +257,7 @@ public class policy {
 			}
 			else {
 				QuerySolution result=results.nextSolution();
-	 		    String x=result.get("x").toString();
+	 		    String x=result.get("y").toString();
 	 		    Individual access1=m.getIndividual(x);
 	 		    m.add(access1, obpAces, rule1);
 			}

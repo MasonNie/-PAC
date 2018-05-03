@@ -4,8 +4,21 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.rdf.model.InfModel;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.reasoner.rulesys.GenericRuleReasoner;
+import org.apache.jena.reasoner.rulesys.Rule;
+import org.apache.jena.vocabulary.ReasonerVocabulary;
+
 import java.awt.GridBagLayout;
 import java.io.File;
+import java.util.List;
 
 import javax.swing.JScrollPane;
 import java.awt.GridBagConstraints;
@@ -17,21 +30,7 @@ public class analysis extends JFrame {
 	private JPanel contentPane;
 	private JTextArea textArea;
 
-	/**
-	 * Launch the application.
-	 */
-	public  void qidong() {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					analysis frame = new analysis();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	
 	public static Boolean isFileExists(String path,int r){
 		File file=new File(path);
 		if(file.exists())
@@ -45,6 +44,23 @@ public class analysis extends JFrame {
 			return false;
 		}
 			
+	}
+	public void tuiLi() {
+		 Model model = ModelFactory.createDefaultModel();
+		 model.read("file:F:/TestSpace/T0/NewWindowsFirewallPolicyOntology.owl");
+		 List rules = Rule.rulesFromURL("file:F:/TestSpace/T0/WFP.rules");
+
+		 GenericRuleReasoner reasoner = new GenericRuleReasoner(rules);
+		 reasoner.setOWLTranslation(true);
+		 reasoner.setDerivationLogging(true);
+		 reasoner.setTransitiveClosureCaching(true);
+		 OntModel om = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_RULE_INF,  //这里使用OWL_DL_MEM效果也一样
+		     model);
+		 Resource configuration = om.createResource();
+		 configuration.addProperty(ReasonerVocabulary.PROPruleMode, "hybrid");
+
+		 InfModel inf = ModelFactory.createInfModel(reasoner, om);
+		 //StmtIterator stmtIter = inf.listStatements(a, null, b);
 	}
 
 	/**
