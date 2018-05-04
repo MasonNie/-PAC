@@ -101,7 +101,8 @@ public class UI extends JFrame {
 		JButton btnNewButton = new JButton("载入");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				analysis.show="";
+				analysis.show_process="";
+				analysis.show_sql="";
 				JFileChooser chooser = new JFileChooser("C:\\Users\\74330\\Desktop\\毕业设计\\聂冠雄"); //创建选择文件对象
 				  chooser.setDialogTitle("请选择文件");//设置标题
 				  chooser.setMultiSelectionEnabled(true);  //设置只能选择文件
@@ -129,6 +130,7 @@ public class UI extends JFrame {
 					JOptionPane.showMessageDialog(null, "请载入有效的规则文件", "警告", JOptionPane.ERROR_MESSAGE);
 				}
 				else {
+					analysis.show_sql="";
 					EventQueue.invokeLater(new Runnable() {//显示分析结果
 						public void run() {
 							try {

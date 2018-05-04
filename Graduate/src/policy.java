@@ -217,6 +217,12 @@ public class policy {
 				m.add(channeloperate1, obp1, this.协议);
 				m.add(channeloperate1, obpOp, rule1);
 			}
+			else {
+				QuerySolution qs=results.nextSolution();
+	 		    String chOp=qs.get("x").toString();
+	 		    channeloperate1=m.getIndividual(chOp);
+	 		    m.add(channeloperate1, obpOp, rule1);
+			}
 		}
 		
 		//创建Access关系，将进程和实体与规则绑定起来

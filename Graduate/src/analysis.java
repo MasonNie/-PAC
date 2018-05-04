@@ -7,6 +7,12 @@ import javax.swing.border.EmptyBorder;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -26,7 +32,8 @@ import javax.swing.JTextArea;
 
 public class analysis extends JFrame {
 	
-	protected static String show="";
+	protected static String show_process="";
+	protected static String show_sql="";
 	private JPanel contentPane;
 	private JTextArea textArea;
 
@@ -39,13 +46,56 @@ public class analysis extends JFrame {
 		}
 		
 		else {
-			show=show+"规则"+r+"的程序不存在!!!路径为："+path+"\n";
+			show_process=show_process+"规则"+r+"的程序不存在!!!路径为："+path+"\n";
 			//textArea.append(show+"\n");
 			return false;
 		}
 			
 	}
-	public void tuiLi() {
+	public void fenXi() {//简易查询型推理
+		OntModel om = ModelFactory.createOntologyModel();
+		om.read("F:/TestSpace/T0/NewWindowsFirewallPolicyOntology.owl");//读取模型
+		String NS = "http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#";//命名空间
+		String wfp = "PREFIX wfp: <" + NS + ">";//SPARQL命名空间
+		String queryString = wfp + "SELECT ?rule1 ?rule2 \r\n" +   //冲突推理
+				" WHERE { ?a wfp:isAccessOf ?rule1.?a wfp:isAccessOf ?rule2\r\n" + 
+				".?rule1 wfp:configurationFileIs ?cfgFile.?rule2 wfp:configurationFileIs ?cfgFile\r\n"+
+				".?op wfp:isOperateOf ?rule1.?op wfp:isOperateOf ?rule2\r\n" + 
+				".?con1 wfp:isControlOf ?rule1.?con2 wfp:isControlOf ?rule2\r\n"+
+                ".FILTER (?rule1!=?rule2).FILTER (?con1!=?con2)}"; 
+		Query query = QueryFactory.create(queryString);//推理配置域相同，程序即作用域相同，协议相同，操作不同的冲突
+		QueryExecution qe = QueryExecutionFactory.create(query, om);
+		ResultSet results = qe.execSelect();
+		while(results.hasNext()) {//循环整合输出结果
+			QuerySolution QS=results.next();
+			String rule1=QS.get("rule1").toString().replace(NS, ""),rule2=QS.get("rule2").toString().replaceAll(NS, "");
+			//过滤输出类似Rule1与Rule2冲突。Rule2与Rule1冲突的输出
+			if(Integer.parseInt(rule1.replace("Rule", ""))<Integer.parseInt(rule2.replace("Rule", ""))) {
+				show_sql=show_sql+"冲突："+rule1+"，"+rule2+"冲突类型：操作冲突\n";
+				System.out.println("冲突："+rule1+","+rule2);
+			}
+		}
+		queryString=wfp+"SELECT ?rule1 ?rule2 \r\n" + 
+				"WHERE { ?a wfp:isAccessOf ?rule1.?a wfp:isAccessOf ?rule2\r\n" + 
+				".?rule1 wfp:configurationFileIs ?cfgFile.?rule2 wfp:configurationFileIs ?cfgFile\r\n"+
+				".?op wfp:isOperateOf ?rule1.?op wfp:isOperateOf ?rule2\r\n" + 
+				".?con wfp:isControlOf ?rule1.?con wfp:isControlOf ?rule2\r\n" + 
+				".FILTER (?rule1!=?rule2)\r\n}";
+		query = QueryFactory.create(queryString);
+		qe = QueryExecutionFactory.create(query, om);
+		results = qe.execSelect();
+		while(results.hasNext()) {
+			QuerySolution QS=results.next();
+			String rule1=QS.get("rule1").toString().replace(NS, ""),rule2=QS.get("rule2").toString().replaceAll(NS, "");
+			//过滤输出类似Rule1与Rule2冲突。Rule2与Rule1的输出
+			if(Integer.parseInt(rule1.replace("Rule", ""))<Integer.parseInt(rule2.replace("Rule", ""))) {
+				show_sql=show_sql+"冗余："+rule1+"，"+rule2+"规则冗余\n";
+				System.out.println("冗余："+rule1+","+rule2);
+			}
+		}
+		
+	}
+	/*public void tuiLi() {
 		 Model model = ModelFactory.createDefaultModel();
 		 model.read("file:F:/TestSpace/T0/NewWindowsFirewallPolicyOntology.owl");
 		 List rules = Rule.rulesFromURL("file:F:/TestSpace/T0/WFP.rules");
@@ -60,13 +110,15 @@ public class analysis extends JFrame {
 		 configuration.addProperty(ReasonerVocabulary.PROPruleMode, "hybrid");
 
 		 InfModel inf = ModelFactory.createInfModel(reasoner, om);
+		 
 		 //StmtIterator stmtIter = inf.listStatements(a, null, b);
-	}
+	}*/
 
 	/**
 	 * Create the frame.
 	 */
 	public analysis() {
+		fenXi();
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		setTitle("结果显示");
@@ -89,7 +141,8 @@ public class analysis extends JFrame {
 		
 		textArea = new JTextArea();
 		textArea.setEditable(false);
-		textArea.append(show);
+		textArea.append(show_process);
+		textArea.append(show_sql);
 		scrollPane.setViewportView(textArea);
 	}
 
