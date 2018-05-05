@@ -63,7 +63,7 @@ public class analysis extends JFrame {
 				".?op wfp:isOperateOf ?rule1.?op wfp:isOperateOf ?rule2\r\n" + 
 				".?con1 wfp:isControlOf ?rule1.?con2 wfp:isControlOf ?rule2\r\n"+
                 ".FILTER (?rule1!=?rule2).FILTER (?con1!=?con2)}"; 
-		Query query = QueryFactory.create(queryString);//推理配置域相同，程序即作用域相同，协议相同，操作不同的冲突
+		Query query = QueryFactory.create(queryString);//推理配置域相同，程序和作用域相同，协议相同，操作不同的冲突
 		QueryExecution qe = QueryExecutionFactory.create(query, om);
 		ResultSet results = qe.execSelect();
 		while(results.hasNext()) {//循环整合输出结果
@@ -71,7 +71,7 @@ public class analysis extends JFrame {
 			String rule1=QS.get("rule1").toString().replace(NS, ""),rule2=QS.get("rule2").toString().replaceAll(NS, "");
 			//过滤输出类似Rule1与Rule2冲突。Rule2与Rule1冲突的输出
 			if(Integer.parseInt(rule1.replace("Rule", ""))<Integer.parseInt(rule2.replace("Rule", ""))) {
-				show_sql=show_sql+"冲突："+rule1+"，"+rule2+"冲突类型：操作冲突\n";
+				show_sql=show_sql+"冲突："+rule1+"，"+rule2+";冲突类型：操作冲突\n";
 				System.out.println("冲突："+rule1+","+rule2);
 			}
 		}
@@ -89,7 +89,7 @@ public class analysis extends JFrame {
 			String rule1=QS.get("rule1").toString().replace(NS, ""),rule2=QS.get("rule2").toString().replaceAll(NS, "");
 			//过滤输出类似Rule1与Rule2冲突。Rule2与Rule1的输出
 			if(Integer.parseInt(rule1.replace("Rule", ""))<Integer.parseInt(rule2.replace("Rule", ""))) {
-				show_sql=show_sql+"冗余："+rule1+"，"+rule2+"规则冗余\n";
+				show_sql=show_sql+"冗余："+rule1+"，"+rule2+";规则冗余\n";
 				System.out.println("冗余："+rule1+","+rule2);
 			}
 		}
@@ -118,10 +118,12 @@ public class analysis extends JFrame {
 	 * Create the frame.
 	 */
 	public analysis() {
-		fenXi();
+		fenXi();//获取分析结果
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		setTitle("结果显示");
+		setLocationRelativeTo(null);//居中
+		//setAlwaysOnTop(true);总在最前
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
