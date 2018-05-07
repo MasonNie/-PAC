@@ -54,7 +54,7 @@ public class analysis extends JFrame {
 	}
 	public void fenXi() {//简易查询型推理
 		OntModel om = ModelFactory.createOntologyModel();
-		om.read("F:/TestSpace/T0/NewWindowsFirewallPolicyOntology.owl");//读取模型
+		om.read("src/owlAndRules/NewWindowsFirewallPolicyOntology.owl");//读取模型
 		String NS = "http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#";//命名空间
 		String wfp = "PREFIX wfp: <" + NS + ">";//SPARQL命名空间
 		//冲突推理

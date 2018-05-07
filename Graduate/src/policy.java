@@ -68,14 +68,7 @@ public class policy {
 		Individual control1;// 控制
 		Individual channeloperate1 = null;// 协议操作
 		Individual rule1;// 规则
-		/*
-		 * OntModel m = ModelFactory.createOntologyModel();//本体 String filePath =
-		 * "F:\\TestSpace\\T0\\"; File f = new
-		 * File(filePath+"NewWindowsFirewallPolicyOntology.owl"); FileOutputStream file
-		 * = null; try { file = new FileOutputStream(f);//覆盖式的输出流操作，是否会有影响。 } catch
-		 * (FileNotFoundException e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } m.read(filePath+"WindowsFirewallPolicyOntology.owl");
-		 */
+		
 		String NS = "http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#";
 		String wfp = "PREFIX wfp: <" + NS + ">";// 声明查询语句中的命名空间WindowsFirewallPolicy
 		String LocalAddress = this.本地地址;

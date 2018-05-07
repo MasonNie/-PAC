@@ -52,14 +52,14 @@ public class UI extends JFrame {
 		long midTime = 0, endTime;
 		FileOutputStream fos = null;
 		try {
-			fos = new FileOutputStream(new File("F:\\TestSpace\\T0\\NewWindowsFirewallPolicyOntology.owl"));
+			fos = new FileOutputStream(new File("src/owlAndRules/NewWindowsFirewallPolicyOntology.owl"));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		InputStreamReader reader = new InputStreamReader(new FileInputStream(file));
 		m = ModelFactory.createOntologyModel();
-		m.read("F:/TestSpace\\T0\\WindowsFirewallPolicyOntology.owl");
+		m.read("src/owlAndRules/WindowsFirewallPolicyOntology.owl");
 		DefaultTableModel dtm = new DefaultTableModel();
 		BufferedReader br = new BufferedReader(reader);
 		String line = br.readLine();
