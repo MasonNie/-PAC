@@ -63,7 +63,7 @@ public class UI extends JFrame {
 		DefaultTableModel dtm = new DefaultTableModel();
 		BufferedReader br = new BufferedReader(reader);
 		String line = br.readLine();
-		String[] head = { "编号", "名称", "已启用", "操作", "程序", "本地地址", "远程地址", "协议", "本地端口", "远程端口" };
+		String[] head = { "编号", "名称","配置域" , "操作", "程序", "本地地址", "远程地址", "协议", "本地端口", "远程端口" };
 		dtm.setColumnIdentifiers(head);
 		while (line != null) {
 			line = br.readLine(); //
@@ -80,7 +80,8 @@ public class UI extends JFrame {
 			}
 		}
 		table.setModel(dtm);
-		br.close();
+		//释放三个操作流
+		br.close();fos.close();reader.close();
 		endTime = System.currentTimeMillis();
 		float seconds0 = (endTime - startTime) / 1000F, seconds1 = (midTime - startTime) / 1000F;
 		System.out.println("总用时：" + Float.toString(seconds0) + " seconds;" + Float.toString(seconds1) + " seconds");

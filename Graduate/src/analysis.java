@@ -46,7 +46,7 @@ public class analysis extends JFrame {
 		}
 		
 		else {
-			show_process=show_process+"规则"+r+"的程序不存在!!!路径为："+path+"\n";
+			show_process=show_process+"规则"+r+"的程序路径无效!!!路径为："+path+"\n";
 			//textArea.append(show+"\n");
 			return false;
 		}
@@ -57,7 +57,8 @@ public class analysis extends JFrame {
 		om.read("F:/TestSpace/T0/NewWindowsFirewallPolicyOntology.owl");//读取模型
 		String NS = "http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#";//命名空间
 		String wfp = "PREFIX wfp: <" + NS + ">";//SPARQL命名空间
-		String queryString = wfp + "SELECT ?rule1 ?rule2 \r\n" +   //冲突推理
+		//冲突推理
+		String queryString = wfp + "SELECT ?rule1 ?rule2 \r\n" +   
 				" WHERE { ?a wfp:isAccessOf ?rule1.?a wfp:isAccessOf ?rule2\r\n" + 
 				".?rule1 wfp:configurationFileIs ?cfgFile.?rule2 wfp:configurationFileIs ?cfgFile\r\n"+
 				".?op wfp:isOperateOf ?rule1.?op wfp:isOperateOf ?rule2\r\n" + 
@@ -75,12 +76,40 @@ public class analysis extends JFrame {
 				System.out.println("冲突："+rule1+","+rule2);
 			}
 		}
+		//端口范围性冲突推理
+		 queryString = wfp + "SELECT  ?rule1 ?rule2\r\n" + 
+		 		"WHERE\r\n" + 
+		 		"  { ?a1   wfp:isAccessOf ?rule1 .?p1 wfp:isObjectOf ?a1.\r\n" + 
+		 		"     ?a2 wfp:isAccessOf ?rule2 .?p2 wfp:isObjectOf ?a2. \r\n" + 
+		 		"    ?rule1  wfp:configurationFileIs  ?cfgFile .\r\n" + 
+		 		"    ?rule2  wfp:configurationFileIs  ?cfgFile .\r\n" + 
+		 		"    ?op     wfp:isOperateOf ?rule1 ; wfp:isOperateOf ?rule2 .\r\n" + 
+		 		"    ?con1   wfp:isControlOf ?rule1 .\r\n" + 
+		 		"    ?con2   wfp:isControlOf ?rule2.\r\n" + 
+		 		" ?p1 wfp:portIsNotLessThan ?s1 ;wfp:portIsNotLargerThan ?b1 .\r\n" + 
+		 		"?p2 wfp:portIsNotLessThan ?s2 ; wfp:portIsNotLargerThan ?b2 .\r\n" + 
+		 		"    FILTER ( ?b1>=?s2 ) FILTER ( ?b2>=?s1) FILTER (?p1!=?p2)\r\n" + 
+		 		"    FILTER ( ?rule1 != ?rule2 ) FILTER ( ?con1 != ?con2 )\r\n" + 
+		 		"  }"; 
+		 query = QueryFactory.create(queryString);//推理配置域相同，程序和作用域相同，协议相同，操作不同的冲突
+		 qe = QueryExecutionFactory.create(query, om);
+		 results = qe.execSelect();
+		while(results.hasNext()) {//循环整合输出结果
+			QuerySolution QS=results.next();
+			String rule1=QS.get("rule1").toString().replace(NS, ""),rule2=QS.get("rule2").toString().replaceAll(NS, "");
+			//过滤输出类似Rule1与Rule2冲突。Rule2与Rule1冲突的输出
+			if(Integer.parseInt(rule1.replace("Rule", ""))<Integer.parseInt(rule2.replace("Rule", ""))) {
+				show_sql=show_sql+"冲突："+rule1+"，"+rule2+";冲突类型：范围重叠冲突\n";
+				System.out.println("冲突："+rule1+","+rule2);
+			}
+		}
+		//冗余推理
 		queryString=wfp+"SELECT ?rule1 ?rule2 \r\n" + 
 				"WHERE { ?a wfp:isAccessOf ?rule1.?a wfp:isAccessOf ?rule2\r\n" + 
 				".?rule1 wfp:configurationFileIs ?cfgFile.?rule2 wfp:configurationFileIs ?cfgFile\r\n"+
 				".?op wfp:isOperateOf ?rule1.?op wfp:isOperateOf ?rule2\r\n" + 
 				".?con wfp:isControlOf ?rule1.?con wfp:isControlOf ?rule2\r\n" + 
-				".FILTER (?rule1!=?rule2)\r\n}";
+				".FILTER (?rule1!=?rule2)}";
 		query = QueryFactory.create(queryString);
 		qe = QueryExecutionFactory.create(query, om);
 		results = qe.execSelect();
@@ -90,6 +119,32 @@ public class analysis extends JFrame {
 			//过滤输出类似Rule1与Rule2冲突。Rule2与Rule1的输出
 			if(Integer.parseInt(rule1.replace("Rule", ""))<Integer.parseInt(rule2.replace("Rule", ""))) {
 				show_sql=show_sql+"冗余："+rule1+"，"+rule2+";规则冗余\n";
+				System.out.println("冗余："+rule1+","+rule2);
+			}
+		}
+		//范围性冗余推理
+		queryString=wfp+"SELECT  ?rule1 ?rule2\r\n" + 
+		 		"WHERE\r\n" + 
+		 		"  { ?a1   wfp:isAccessOf ?rule1 .?p1 wfp:isObjectOf ?a1.\r\n" + 
+		 		"    ?a2 wfp:isAccessOf ?rule2 .?p2 wfp:isObjectOf ?a2. \r\n" + 
+		 		"    ?rule1  wfp:configurationFileIs  ?cfgFile .\r\n" + 
+		 		"    ?rule2  wfp:configurationFileIs  ?cfgFile .\r\n" + 
+		 		"    ?op     wfp:isOperateOf ?rule1 ; wfp:isOperateOf ?rule2 .\r\n" + 
+		 		"    ?con    wfp:isControlOf ?rule1 ; wfp:isControlOf ?rule2.\r\n" + 
+		 		" ?p1 wfp:portIsNotLessThan ?s1 ;wfp:portIsNotLargerThan ?b1 .\r\n" + 
+		 		"?p2 wfp:portIsNotLessThan ?s2 ; wfp:portIsNotLargerThan ?b2 .\r\n" + 
+		 		"    FILTER ( ?b1>=?s2 ) FILTER ( ?b2>=?s1) FILTER (?p1!=?p2)\r\n" + 
+		 		"    FILTER ( ?rule1 != ?rule2 )\r\n" + 
+		 		"  }";
+		query = QueryFactory.create(queryString);
+		qe = QueryExecutionFactory.create(query, om);
+		results = qe.execSelect();
+		while(results.hasNext()) {
+			QuerySolution QS=results.next();
+			String rule1=QS.get("rule1").toString().replace(NS, ""),rule2=QS.get("rule2").toString().replaceAll(NS, "");
+			//过滤输出类似Rule1与Rule2冲突。Rule2与Rule1的输出
+			if(Integer.parseInt(rule1.replace("Rule", ""))<Integer.parseInt(rule2.replace("Rule", ""))) {
+				show_sql=show_sql+"冗余："+rule1+"，"+rule2+";范围重叠冗余\n";
 				System.out.println("冗余："+rule1+","+rule2);
 			}
 		}
@@ -145,6 +200,8 @@ public class analysis extends JFrame {
 		textArea.setEditable(false);
 		textArea.append(show_process);
 		textArea.append(show_sql);
+		if((show_sql+show_process).equals("")||(show_sql+show_process).isEmpty())
+			textArea.append("无异常");
 		scrollPane.setViewportView(textArea);
 	}
 

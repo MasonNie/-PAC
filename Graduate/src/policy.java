@@ -55,7 +55,7 @@ public class policy {
 	}
 
 	public Object[] tableRow() {
-		Object[] showRow = { R, this.名称, this.已启用, this.操作, this.程序, this.本地地址, this.远程地址, this.协议, this.本地端口,
+		Object[] showRow = { R, this.名称, this.配置文件, this.操作, this.程序, this.本地地址, this.远程地址, this.协议, this.本地端口,
 				this.远程端口 };
 		return showRow;
 	}
@@ -192,6 +192,9 @@ public class policy {
 					Individual entityall = m.getIndividual(NS + "AllEntities");
 					m.add(process1, dtpPort, this.本地端口);
 					m.add(process1, obp1, entityall);
+				} else {
+					QuerySolution qs = results.nextSolution();
+					process1 = m.getIndividual(qs.get("x").toString());
 				}
 			} else {
 				queryString = wfp + " SELECT ?x WHERE { ?x wfp:portIs ?y .?x wfp:runningOn wfp:Host" + H + " \r\n"
@@ -203,7 +206,25 @@ public class policy {
 					process1 = process.createIndividual(NS + "Process" + ++P);
 					m.add(process1, dtpPort, this.本地端口);
 					m.add(process1, obp1, host1);
+				} else {
+					QuerySolution qs = results.nextSolution();
+					process1 = m.getIndividual(qs.get("x").toString());
 				}
+			}
+			int fg = this.本地端口.indexOf("-");// 范围端口
+			if (fg != -1) {
+				int low = Integer.parseInt(this.本地端口.substring(0, fg)),
+						high = Integer.parseInt(this.本地端口.substring(fg + 1));
+				DatatypeProperty dtpBiger = m.getDatatypeProperty(NS + "portIsNotLessThan");
+				DatatypeProperty dtpLess = m.getDatatypeProperty(NS + "portIsNotLargerThan");
+				m.addLiteral(process1, dtpBiger, low);
+				m.addLiteral(process1, dtpLess, high);
+			} else if (!this.本地端口.contains(",")) {
+				int port = Integer.parseInt(this.本地端口);
+				DatatypeProperty dtpBiger = m.getDatatypeProperty(NS + "portIsNotLessThan");
+				DatatypeProperty dtpLess = m.getDatatypeProperty(NS + "portIsNotLargerThan");
+				m.addLiteral(process1, dtpBiger, port);
+				m.addLiteral(process1, dtpLess, port);
 			}
 
 		}
@@ -242,14 +263,13 @@ public class policy {
 		boolean en = (host1 == null);
 		String entity = en ? "AllEntities" : "Host" + H;
 		OntClass access = m.getOntClass(NS + "Access");
-		if(!this.程序.equals("任何"))
-		queryString = wfp
-				+ "SELECT ?x ?y WHERE {?x wfp:isObjectOf ?y. ?z wfp:isSubjectOf ?y.?x wfp:programPathIs ?u\r\n"
-				+ ".FILTER regex(?u,\"" + this.程序 + "\")\r\n" + ".FILTER (?z=wfp:" + entity + ")}";
-		else if(!this.本地端口.equals("任何"))
+		if (!this.程序.equals("任何"))
 			queryString = wfp
-			+ "SELECT ?x ?y WHERE {?x wfp:isObjectOf ?y. ?z wfp:isSubjectOf ?y.?x wfp:portIs ?u\r\n"
-			+ ".FILTER regex(?u,\"" + this.本地端口 + "\")\r\n" + ".FILTER (?z=wfp:" + entity + ")}";
+					+ "SELECT ?x ?y WHERE {?x wfp:isObjectOf ?y. ?z wfp:isSubjectOf ?y.?x wfp:programPathIs ?u\r\n"
+					+ ".FILTER regex(?u,\"" + this.程序 + "\")\r\n" + ".FILTER (?z=wfp:" + entity + ")}";
+		else if (!this.本地端口.equals("任何"))
+			queryString = wfp + "SELECT ?x ?y WHERE {?x wfp:isObjectOf ?y. ?z wfp:isSubjectOf ?y.?x wfp:portIs ?u\r\n"
+					+ ".FILTER regex(?u,\"" + this.本地端口 + "\")\r\n" + ".FILTER (?z=wfp:" + entity + ")}";
 		if (!queryString.isEmpty()) {
 			Query query = QueryFactory.create(queryString);
 			QueryExecution qe = QueryExecutionFactory.create(query, m);
