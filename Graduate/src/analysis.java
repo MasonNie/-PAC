@@ -69,7 +69,8 @@ public class analysis extends JFrame {
 		ResultSet results = qe.execSelect();
 		while(results.hasNext()) {//循环整合输出结果
 			QuerySolution QS=results.next();
-			String rule1=QS.get("rule1").toString().replace(NS, ""),rule2=QS.get("rule2").toString().replaceAll(NS, "");
+			String rule1=QS.get("rule1").toString().replace(NS, ""),
+				   rule2=QS.get("rule2").toString().replaceAll(NS, "");
 			//过滤输出类似Rule1与Rule2冲突。Rule2与Rule1冲突的输出
 			if(Integer.parseInt(rule1.replace("Rule", ""))<Integer.parseInt(rule2.replace("Rule", ""))) {
 				show_sql=show_sql+"冲突："+rule1+"，"+rule2+";冲突类型：操作冲突\n";
@@ -87,10 +88,11 @@ public class analysis extends JFrame {
 		 		"    ?con1   wfp:isControlOf ?rule1 .\r\n" + 
 		 		"    ?con2   wfp:isControlOf ?rule2.\r\n" + 
 		 		" ?p1 wfp:portIsNotLessThan ?s1 ;wfp:portIsNotLargerThan ?b1 .\r\n" + 
-		 		"?p2 wfp:portIsNotLessThan ?s2 ; wfp:portIsNotLargerThan ?b2 .\r\n" + 
+		 		" ?p2 wfp:portIsNotLessThan ?s2 ; wfp:portIsNotLargerThan ?b2 .\r\n" + 
 		 		"    FILTER ( ?b1>=?s2 ) FILTER ( ?b2>=?s1) FILTER (?p1!=?p2)\r\n" + 
 		 		"    FILTER ( ?rule1 != ?rule2 ) FILTER ( ?con1 != ?con2 )\r\n" + 
 		 		"  }"; 
+		//推理两程序中端口号范围关系重叠的，R1：[S1,B1],R2[S2,B2];!(B1<S2||B2<S1)
 		 query = QueryFactory.create(queryString);//推理配置域相同，程序和作用域相同，协议相同，操作不同的冲突
 		 qe = QueryExecutionFactory.create(query, om);
 		 results = qe.execSelect();
@@ -132,10 +134,11 @@ public class analysis extends JFrame {
 		 		"    ?op     wfp:isOperateOf ?rule1 ; wfp:isOperateOf ?rule2 .\r\n" + 
 		 		"    ?con    wfp:isControlOf ?rule1 ; wfp:isControlOf ?rule2.\r\n" + 
 		 		" ?p1 wfp:portIsNotLessThan ?s1 ;wfp:portIsNotLargerThan ?b1 .\r\n" + 
-		 		"?p2 wfp:portIsNotLessThan ?s2 ; wfp:portIsNotLargerThan ?b2 .\r\n" + 
+		 		" ?p2 wfp:portIsNotLessThan ?s2 ; wfp:portIsNotLargerThan ?b2 .\r\n" + 
 		 		"    FILTER ( ?b1>=?s2 ) FILTER ( ?b2>=?s1) FILTER (?p1!=?p2)\r\n" + 
 		 		"    FILTER ( ?rule1 != ?rule2 )\r\n" + 
 		 		"  }";
+		//推理两程序中端口号范围关系重叠的，R1：[S1,B1],R2[S2,B2];!(B1<S2||B2<S1)
 		query = QueryFactory.create(queryString);
 		qe = QueryExecutionFactory.create(query, om);
 		results = qe.execSelect();
