@@ -17,10 +17,10 @@
     <rdfs:subClassOf>
       <rdfs:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     </rdfs:subClassOf>
-    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#UserGroup"/>
     <rdf:type>
       <rdfs:Class rdf:about="http://www.w3.org/2002/07/owl#Class"/>
     </rdf:type>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#UserGroup"/>
     <rdf:type>
       <rdfs:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     </rdf:type>
@@ -38,10 +38,10 @@
     <rdfs:subClassOf>
       <rdfs:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     </rdfs:subClassOf>
-    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Computer"/>
     <rdf:type>
       <rdfs:Class rdf:about="http://www.w3.org/2002/07/owl#Class"/>
     </rdf:type>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Computer"/>
     <rdf:type>
       <rdfs:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     </rdf:type>
@@ -50,10 +50,10 @@
     <rdfs:subClassOf>
       <rdfs:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     </rdfs:subClassOf>
-    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Access"/>
     <rdf:type>
       <rdfs:Class rdf:about="http://www.w3.org/2002/07/owl#Class"/>
     </rdf:type>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Access"/>
     <rdf:type>
       <rdfs:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     </rdf:type>
@@ -105,10 +105,10 @@
     <rdfs:subClassOf>
       <rdfs:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     </rdfs:subClassOf>
-    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#User"/>
     <rdf:type>
       <rdfs:Class rdf:about="http://www.w3.org/2002/07/owl#Class"/>
     </rdf:type>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#User"/>
     <rdf:type>
       <rdfs:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     </rdf:type>
@@ -174,10 +174,10 @@
     <rdfs:subClassOf>
       <rdfs:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     </rdfs:subClassOf>
-    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Rule"/>
     <rdf:type>
       <rdfs:Class rdf:about="http://www.w3.org/2002/07/owl#Class"/>
     </rdf:type>
+    <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Rule"/>
     <rdf:type>
       <rdfs:Class rdf:about="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     </rdf:type>
@@ -567,6 +567,21 @@
           </untitled-ontology-27:Rule>
         </untitled-ontology-27:isSubjectOf>
         <untitled-ontology-27:isSubjectOf>
+          <untitled-ontology-27:Access rdf:about="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Access4">
+            <untitled-ontology-27:isAccessOf>
+              <untitled-ontology-27:Rule rdf:about="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Rule7">
+                <untitled-ontology-27:onOrOffIs>是</untitled-ontology-27:onOrOffIs>
+                <untitled-ontology-27:userGroupIs>任何</untitled-ontology-27:userGroupIs>
+                <untitled-ontology-27:configurationFileIs>所有</untitled-ontology-27:configurationFileIs>
+                <untitled-ontology-27:nameIs>A_a</untitled-ontology-27:nameIs>
+                <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+                <rdf:type rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Access"/>
+              </untitled-ontology-27:Rule>
+            </untitled-ontology-27:isAccessOf>
+            <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+          </untitled-ontology-27:Access>
+        </untitled-ontology-27:isSubjectOf>
+        <untitled-ontology-27:isSubjectOf>
           <untitled-ontology-27:Rule rdf:about="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Rule6">
             <untitled-ontology-27:onOrOffIs>是</untitled-ontology-27:onOrOffIs>
             <untitled-ontology-27:userGroupIs>任何</untitled-ontology-27:userGroupIs>
@@ -611,6 +626,7 @@
             <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
           </untitled-ontology-27:Access>
         </untitled-ontology-27:isSubjectOf>
+        <untitled-ontology-27:isSubjectOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Rule7"/>
         <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
         <rdf:type rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Operate"/>
       </owl:NamedIndividual>
@@ -661,7 +677,20 @@
   <rdf:List rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil">
     <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
   </rdf:List>
+  <untitled-ontology-27:Process rdf:about="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Process4">
+    <untitled-ontology-27:isObjectOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Access4"/>
+    <untitled-ontology-27:portIsNotLargerThan rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >65532</untitled-ontology-27:portIsNotLargerThan>
+    <untitled-ontology-27:portIsNotLessThan rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >50011</untitled-ontology-27:portIsNotLessThan>
+    <untitled-ontology-27:runningOn rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#AllEntities"/>
+    <untitled-ontology-27:portIs>50011-65532</untitled-ontology-27:portIs>
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    <rdf:type rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Entity"/>
+    <rdf:type rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Operate"/>
+  </untitled-ontology-27:Process>
   <untitled-ontology-27:ChannelOperate rdf:about="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#ChannelOperate1">
+    <untitled-ontology-27:isOperateOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Rule7"/>
     <untitled-ontology-27:isOperateOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Rule6"/>
     <untitled-ontology-27:isOperateOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Rule5"/>
     <untitled-ontology-27:isOperateOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Rule2"/>
@@ -683,6 +712,7 @@
     <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
   </untitled-ontology-27:Deny>
   <untitled-ontology-27:Permit rdf:about="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Permit">
+    <untitled-ontology-27:isControlOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Rule7"/>
     <untitled-ontology-27:isControlOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Rule6"/>
     <untitled-ontology-27:isControlOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Rule5"/>
     <untitled-ontology-27:isControlOf rdf:resource="http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#Rule3"/>
