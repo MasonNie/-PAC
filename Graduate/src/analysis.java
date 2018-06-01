@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -20,6 +21,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.reasoner.rulesys.GenericRuleReasoner;
 import org.apache.jena.reasoner.rulesys.Rule;
+import org.apache.jena.riot.RiotException;
 import org.apache.jena.vocabulary.ReasonerVocabulary;
 
 import java.awt.GridBagLayout;
@@ -53,6 +55,8 @@ public class analysis extends JFrame {
 			
 	}
 	public void fenXi() {//简易查询型推理
+		long startTime = System.currentTimeMillis();
+		long endTime = 0,midTime=0;
 		OntModel om = ModelFactory.createOntologyModel();
 		om.read("src/owlAndRules/NewWindowsFirewallPolicyOntology.owl");//读取模型
 		String NS = "http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#";//命名空间
@@ -74,7 +78,7 @@ public class analysis extends JFrame {
 			//过滤输出类似Rule1与Rule2冲突。Rule2与Rule1冲突的输出
 			if(Integer.parseInt(rule1.replace("Rule", ""))<Integer.parseInt(rule2.replace("Rule", ""))) {
 				show_sql=show_sql+"冲突："+rule1+"，"+rule2+";冲突类型：操作冲突\n";
-				System.out.println("冲突："+rule1+","+rule2);
+				//System.out.println("冲突："+rule1+","+rule2);
 			}
 		}
 		//端口范围性冲突推理
@@ -102,9 +106,10 @@ public class analysis extends JFrame {
 			//过滤输出类似Rule1与Rule2冲突。Rule2与Rule1冲突的输出
 			if(Integer.parseInt(rule1.replace("Rule", ""))<Integer.parseInt(rule2.replace("Rule", ""))) {
 				show_sql=show_sql+"冲突："+rule1+"，"+rule2+";冲突类型：范围重叠冲突\n";
-				System.out.println("冲突："+rule1+","+rule2);
+				//System.out.println("冲突："+rule1+","+rule2);
 			}
 		}
+		midTime=System.currentTimeMillis();
 		//冗余推理
 		queryString=wfp+"SELECT ?rule1 ?rule2 \r\n" + 
 				"WHERE { ?a wfp:isAccessOf ?rule1.?a wfp:isAccessOf ?rule2\r\n" + 
@@ -121,7 +126,7 @@ public class analysis extends JFrame {
 			//过滤输出类似Rule1与Rule2冲突。Rule2与Rule1的输出
 			if(Integer.parseInt(rule1.replace("Rule", ""))<Integer.parseInt(rule2.replace("Rule", ""))) {
 				show_sql=show_sql+"冗余："+rule1+"，"+rule2+";规则冗余\n";
-				System.out.println("冗余："+rule1+","+rule2);
+				//System.out.println("冗余："+rule1+","+rule2);
 			}
 		}
 		//范围性冗余推理
@@ -134,7 +139,7 @@ public class analysis extends JFrame {
 		 		"    ?op     wfp:isOperateOf ?rule1 ; wfp:isOperateOf ?rule2 .\r\n" + 
 		 		"    ?con    wfp:isControlOf ?rule1 ; wfp:isControlOf ?rule2.\r\n" + 
 		 		" ?p1 wfp:portIsNotLessThan ?s1 ;wfp:portIsNotLargerThan ?b1 .\r\n" + 
-		 		" ?p2 wfp:portIsNotLessThan ?s2 ; wfp:portIsNotLargerThan ?b2 .\r\n" + 
+		 		" ?p2 wfp:portIsNotLessThan ?s2 ;wfp:portIsNotLargerThan ?b2 .\r\n" + 
 		 		"    FILTER ( ?b1>=?s2 ) FILTER ( ?b2>=?s1) FILTER (?p1!=?p2)\r\n" + 
 		 		"    FILTER ( ?rule1 != ?rule2 )\r\n" + 
 		 		"  }";
@@ -148,10 +153,16 @@ public class analysis extends JFrame {
 			//过滤输出类似Rule1与Rule2冲突。Rule2与Rule1的输出
 			if(Integer.parseInt(rule1.replace("Rule", ""))<Integer.parseInt(rule2.replace("Rule", ""))) {
 				show_sql=show_sql+"冗余："+rule1+"，"+rule2+";范围重叠冗余\n";
-				System.out.println("冗余："+rule1+","+rule2);
+				//System.out.println("冗余："+rule1+","+rule2);
 			}
 		}
-		
+		endTime=System.currentTimeMillis();
+		float seconds0 = (endTime - startTime) / 1000F,
+				seconds1 = (midTime - startTime) / 1000F,
+				seconds2=(endTime-midTime) / 1000F;
+		System.out.println("异常分析总用时：" + Float.toString(seconds0) + " seconds");
+		System.out.println("冲突分析用时：" + Float.toString(seconds1) + " seconds");
+		System.out.println("冗余分析用时：" + Float.toString(seconds2) + " seconds");
 	}
 	/*public void tuiLi() {
 		 Model model = ModelFactory.createDefaultModel();
@@ -176,7 +187,7 @@ public class analysis extends JFrame {
 	 * Create the frame.
 	 */
 	public analysis() {
-		fenXi();//获取分析结果
+		fenXi();//获取分析结果		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		setTitle("结果显示");

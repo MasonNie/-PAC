@@ -69,6 +69,9 @@ public class policy {
 		Individual channeloperate1 = null;// 协议操作
 		Individual rule1;// 规则
 		
+		long startTime = System.currentTimeMillis();
+		long endTime;
+		
 		String NS = "http://www.semanticweb.org/administrator/ontologies/2018/3/untitled-ontology-27#";
 		String wfp = "PREFIX wfp: <" + NS + ">";// 声明查询语句中的命名空间WindowsFirewallPolicy
 		String LocalAddress = this.本地地址;
@@ -376,6 +379,9 @@ public class policy {
 				m.add(control1, obp, rule1);
 			}
 		}
+		endTime = System.currentTimeMillis();
+		float seconds0 = (endTime - startTime) / 1000F;
+		//System.out.println(seconds0+"seconds");
 	}
 
 }

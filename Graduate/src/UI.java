@@ -68,10 +68,21 @@ public class UI extends JFrame {
 		while (line != null) {
 			line = br.readLine(); //
 			if (line != null) {
-				String[] row = line.split("\t");
-				policy p = new policy(row);
-				p.createOntology(m);
-				dtm.addRow(p.tableRow());
+				String[] row = null;
+				if(line.contains("\t"))
+					row = line.split("\t");
+				else 
+					row = line.split(",");
+				try {
+					policy p = new policy(row);
+					p.createOntology(m);
+					dtm.addRow(p.tableRow());
+				}catch(Exception e){
+					JOptionPane.showMessageDialog(null, "请载入正确的规则列表", "提示", JOptionPane.ERROR_MESSAGE);
+					dtm=new DefaultTableModel();
+					policy.xiGou();
+					break;
+				}	
 			} else {
 				midTime = System.currentTimeMillis();
 				RDFWriter rdfWriter = m.getWriter("RDF/XML");
@@ -84,8 +95,8 @@ public class UI extends JFrame {
 		br.close();fos.close();reader.close();
 		endTime = System.currentTimeMillis();
 		float seconds0 = (endTime - startTime) / 1000F, seconds1 = (midTime - startTime) / 1000F;
-		System.out.println("总用时：" + Float.toString(seconds0) + " seconds;" + Float.toString(seconds1) + " seconds");
-
+		System.out.println("本体生成总用时：" + Float.toString(seconds0) + "seconds \n本体操作：" + Float.toString(seconds1) + "seconds");
+		System.out.println("文件操作："+Float.toString(seconds0-seconds1) +"seconds");
 	}
 
 	/**
@@ -93,7 +104,7 @@ public class UI extends JFrame {
 	 */
 	public UI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setTitle("TEST");
+		setTitle("安全策略分析工具");
 		setBounds(100, 100, 800, 600);
 		setLocationRelativeTo(null);
 		contentPane = new JPanel();
@@ -109,7 +120,7 @@ public class UI extends JFrame {
 				JFileChooser chooser = new JFileChooser("C:\\Users\\74330\\Desktop\\毕业设计\\聂冠雄"); // 创建选择文件对象
 				chooser.setDialogTitle("请选择文件");// 设置标题
 				chooser.setMultiSelectionEnabled(true); // 设置只能选择文件
-				FileNameExtensionFilter filter = new FileNameExtensionFilter("txt", "txt");// 定义可选择文件类型
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("txt,csv", "txt","csv");// 定义可选择文件类型
 				chooser.setFileFilter(filter); // 设置可选择文件类型
 				chooser.showOpenDialog(null); // 打开选择文件对话框,null可设置为你当前的窗口JFrame或Frame
 				try {
@@ -140,7 +151,7 @@ public class UI extends JFrame {
 								analysis frame = new analysis();
 								frame.setVisible(true);
 							} catch (Exception e) {
-								e.printStackTrace();
+								JOptionPane.showMessageDialog(null,e.getMessage(),"提示", JOptionPane.ERROR_MESSAGE);
 							}
 						}
 					});
